@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<title>Penyelaras KKP</title>
+<style>
+  :root{
+    --navy:#071a33; --navy2:#0d2a50; --card:rgba(255,255,255,.07); --line:rgba(255,255,255,.14);
+    --yellow:#ffc21a; --white:#ffffff; --muted:#b8c6dc; --green:#2ad17a; --red:#ff4d5e; --blue:#4ea8ff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:1080px;height:1920px;overflow:hidden;background:var(--navy);
+    font-family:"Inter","DejaVu Sans",sans-serif;color:var(--white);-webkit-font-smoothing:antialiased}
+  #stage{position:relative;width:1080px;height:1920px;overflow:hidden;background:var(--navy)}
+  .blob{position:absolute;border-radius:50%;filter:blur(120px);opacity:.55}
+  #b1{width:900px;height:900px;background:#11408a;left:-300px;top:-200px}
+  #b2{width:800px;height:800px;background:#0a5c6b;right:-300px;bottom:100px}
+  #b3{width:600px;height:600px;background:#5a3a00;left:200px;top:900px;opacity:.35}
+  #grid{position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:90px 90px;opacity:.18}
+  .stripes{position:absolute;left:0;right:0;height:26px;background:repeating-linear-gradient(-45deg,var(--yellow) 0 34px,#111 34px 68px)}
+  #topStripe{top:0} #botStripe{bottom:0}
+
+  /* persistent chrome */
+  #brand{position:absolute;top:70px;left:70px;right:70px;display:flex;align-items:center;justify-content:space-between;z-index:5}
+  .logo{display:flex;align-items:center;gap:18px;font-weight:800;font-size:30px;letter-spacing:3px}
+  .logo .mark{width:62px;height:62px;border-radius:16px;background:var(--yellow);display:grid;place-items:center}
+  .chip{font-size:26px;font-weight:700;padding:12px 24px;border-radius:999px;border:2px solid var(--line);color:var(--muted);letter-spacing:1px}
+  #footer{position:absolute;left:70px;right:70px;bottom:80px;z-index:5}
+  #footer .ref{font-size:24px;color:var(--muted);margin-bottom:18px;display:flex;justify-content:space-between}
+  #bar{height:10px;border-radius:10px;background:rgba(255,255,255,.12);overflow:hidden}
+  #barFill{height:100%;width:0;background:linear-gradient(90deg,var(--yellow),#ff8a00);border-radius:10px}
+
+  /* scenes */
+  .scene{position:absolute;left:70px;right:70px;top:190px;bottom:200px;display:none;flex-direction:column;justify-content:center;z-index:4}
+  .kicker{display:inline-flex;align-self:flex-start;align-items:center;gap:14px;background:var(--yellow);color:#111;font-weight:800;font-size:30px;padding:12px 26px;border-radius:12px;letter-spacing:1px;margin-bottom:34px}
+  .kicker .n{background:#111;color:var(--yellow);border-radius:8px;padding:2px 12px}
+  h1{font-size:104px;line-height:1.02;font-weight:900;letter-spacing:-2px}
+  h2{font-size:78px;line-height:1.05;font-weight:900;letter-spacing:-1.5px;margin-bottom:40px}
+  .y{color:var(--yellow)} .g{color:var(--green)} .r{color:var(--red)} .b{color:var(--blue)}
+  p.lead{font-size:44px;line-height:1.3;color:#e6edf7;font-weight:500}
+  .card{background:var(--card);border:2px solid var(--line);border-radius:28px;padding:34px 38px;margin-bottom:24px;backdrop-filter:blur(6px)}
+  .row{display:flex;gap:28px;align-items:center}
+  .ico{flex:0 0 96px;height:96px;border-radius:24px;display:grid;place-items:center;background:rgba(255,194,26,.14);border:2px solid rgba(255,194,26,.45)}
+  .ico svg{width:56px;height:56px}
+  .ct{font-size:38px;line-height:1.28;font-weight:600}
+  .ct small{display:block;font-size:28px;color:var(--muted);font-weight:500;margin-top:8px}
+  .law{display:inline-block;align-self:flex-start;font-size:24px;font-weight:700;color:var(--yellow);border:2px solid rgba(255,194,26,.5);border-radius:10px;padding:4px 14px;margin-top:12px}
+  .note{font-size:30px;line-height:1.35;color:var(--muted);margin-top:18px}
+  .stamp{display:inline-block;font-size:92px;font-weight:900;color:var(--red);border:10px solid var(--red);border-radius:22px;padding:6px 40px;letter-spacing:4px}
+  .big-num{font-size:150px;font-weight:900;line-height:1;color:var(--yellow);letter-spacing:-4px}
+  .plus{display:grid;place-items:center;font-size:70px;font-weight:900;color:var(--yellow);margin:6px 0 18px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  .tile{background:var(--card);border:2px solid var(--line);border-radius:26px;padding:30px 28px;min-height:270px}
+  .tile .ico{margin-bottom:22px;width:88px;height:88px;flex:none}
+  .tile .tt{font-size:33px;line-height:1.25;font-weight:700}
+  .tile .ts{font-size:25px;line-height:1.3;color:var(--muted);margin-top:8px}
+  .pen{border-color:rgba(255,77,94,.55);background:rgba(255,77,94,.09)}
+  .pen .ico{background:rgba(255,77,94,.15);border-color:rgba(255,77,94,.55)}
+  .money{font-size:96px;font-weight:900;color:var(--red);letter-spacing:-2px;line-height:1}
+  .step{display:flex;gap:26px;align-items:center;margin-bottom:22px}
+  .step .num{flex:0 0 84px;height:84px;border-radius:50%;background:var(--yellow);color:#111;font-size:44px;font-weight:900;display:grid;place-items:center}
+  .step .st{font-size:38px;font-weight:700;line-height:1.25}
+  .step .st small{display:block;font-size:27px;color:var(--muted);font-weight:500;margin-top:4px}
+  .src{font-size:27px;line-height:1.5;color:#d6e0ee}
+  .src li{margin-left:34px;margin-bottom:10px}
+  .center{text-align:center;align-items:center}
+  .center .kicker,.center .law{align-self:center}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="b1" class="blob"></div><div id="b2" class="blob"></div><div id="b3" class="blob"></div>
+  <div id="grid"></div>
+  <div id="topStripe" class="stripes"></div><div id="botStripe" class="stripes"></div>
+
+  <div id="brand">
+    <div class="logo"><div class="mark">
+      <svg viewBox="0 0 64 64" width="42" height="42"><path d="M8 44h48v6H8z" fill="#111"/><path d="M12 44c0-12 8-22 20-22s20 10 20 22z" fill="#111"/><rect x="29" y="14" width="6" height="12" rx="2" fill="#111"/></svg>
+    </div>KESEDARAN KKP</div>
+    <div class="chip" id="chip">AKTA 514</div>
+  </div>
+
+  <!-- ============ S0: HOOK ============ -->
+  <section class="scene" data-start="0" data-dur="9" data-chip="AKTA 514">
+    <div data-in="0.2" class="kicker">⚠ PERHATIAN MAJIKAN</div>
+    <h1 data-in="0.5">Tempat kerja anda ada</h1>
+    <div data-in="1.2" data-a="pop" class="big-num" style="margin:24px 0"><span data-count="5" data-cin="1.2">5</span> orang pekerja</div>
+    <h1 data-in="2.0" class="y">atau lebih?</h1>
+    <p data-in="3.6" class="lead" style="margin-top:50px">Sudahkah anda melantik seorang</p>
+    <div data-in="4.3" data-a="pop" style="margin-top:20px"><span class="stamp" style="color:var(--yellow);border-color:var(--yellow);font-size:76px">PENYELARAS KKP?</span></div>
+  </section>
+
+  <!-- ============ S1: KONTEKS ============ -->
+  <section class="scene" data-start="9" data-dur="12" data-chip="LATAR BELAKANG">
+    <div data-in="0.2" class="kicker">LATAR BELAKANG</div>
+    <h2 data-in="0.4">Akta KKP 1994 <span class="y">(Akta 514)</span> telah dipinda</h2>
+    <div data-in="1.4" data-a="left" class="card"><div class="row">
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#ffc21a" stroke-width="2"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h8M9 17h8"/></svg></div>
+      <div class="ct">Akta KKP (Pindaan) 2022 <span class="y">[Akta A1648]</span><small>Diluluskan Parlimen pada 2022</small></div></div></div>
+    <div data-in="2.4" data-a="left" class="card"><div class="row">
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#ffc21a" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div>
+      <div class="ct">Berkuat kuasa <span class="y">1 Jun 2024</span><small>Meliputi semua sektor pekerjaan*</small></div></div></div>
+    <div data-in="3.4" data-a="left" class="card" style="border-color:rgba(255,194,26,.6)"><div class="row">
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#ffc21a" stroke-width="2"><path d="M12 3l9 4v5c0 5-4 8-9 9-5-1-9-4-9-9V7z"/><path d="M8 12l3 3 5-6"/></svg></div>
+      <div class="ct">Memperkenalkan <span class="y">Seksyen 29A</span><small>Kewajipan majikan melantik Penyelaras KKP</small></div></div></div>
+    <p data-in="4.4" class="note">* Kecuali angkatan tentera dan kerja di atas kapal yang dikawal undang-undang perkapalan saudagar [Seksyen 1(2)].</p>
+  </section>
+
+  <!-- ============ S2: APA ITU ============ -->
+  <section class="scene" data-start="21" data-dur="24" data-chip="1 / 6">
+    <div data-in="0.2" class="kicker"><span class="n">1</span> APAKAH ITU PENYELARAS KKP?</div>
+    <h2 data-in="0.5">Penyelaras <span class="y">Keselamatan dan Kesihatan Pekerjaan</span></h2>
+    <p data-in="1.4" class="lead" style="margin-bottom:40px">atau <b class="y">OSH Coordinator (OSH-C)</b> ialah seorang <b>pekerja</b> yang dilantik oleh majikan untuk <b>menyelaras hal ehwal KKP</b> di tempat kerja.</p>
+    <div data-in="4" data-a="left" class="card"><div class="row">
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#ffc21a" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg></div>
+      <div class="ct">Dilantik daripada kalangan pekerja majikan sendiri</div></div></div>
+    <div data-in="6" data-a="left" class="card"><div class="row">
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#ffc21a" stroke-width="2"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg></div>
+      <div class="ct">Untuk tempat kerja yang <u>tidak</u> dikehendaki menggaji Pegawai Keselamatan dan Kesihatan (SHO)</div></div></div>
+    <div data-in="8.5" data-a="left" class="card"><div class="row">
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#ffc21a" stroke-width="2"><path d="M12 3l9 4v5c0 5-4 8-9 9-5-1-9-4-9-9V7z"/></svg></div>
+      <div class="ct">Penghubung utama antara majikan, pekerja dan isu KKP</div></div></div>
+    <div data-in="10" class="law">Seksyen 29A, Akta 514</div>
+  </section>
+
+  <!-- ============ S3: SIAPA WAJIB ============ -->
+  <section class="scene" data-start="45" data-dur="28" data-chip="2 / 6">
+    <div data-in="0.2" class="kicker"><span class="n">2</span> SIAPA YANG WAJIB MELANTIK?</div>
+    <h2 data-in="0.5">Majikan wajib melantik jika <span class="y">KEDUA-DUA</span> syarat dipenuhi:</h2>
+    <div data-in="2.5" data-a="left" class="card"><div class="row">
+      <div class="ico" style="background:rgba(42,209,122,.15);border-color:rgba(42,209,122,.6)"><svg viewBox="0 0 24 24" fill="none" stroke="#2ad17a" stroke-width="3"><path d="M5 12l5 5 9-10"/></svg></div>
+      <div class="ct">Terdapat <span class="y">5 orang pekerja atau lebih</span> di tempat kerja itu</div></div></div>
+    <div class="plus" data-in="5" data-a="pop">+</div>
+    <div data-in="6" data-a="left" class="card"><div class="row">
+      <div class="ico" style="background:rgba(42,209,122,.15);border-color:rgba(42,209,122,.6)"><svg viewBox="0 0 24 24" fill="none" stroke="#2ad17a" stroke-width="3"><path d="M5 12l5 5 9-10"/></svg></div>
+      <div class="ct">Tempat kerja <span class="y">tidak</span> dikehendaki menggaji SHO di bawah Seksyen 29<small>iaitu tidak tersenarai dalam Perintah KKP (Pegawai Keselamatan dan Kesihatan) 1997</small></div></div></div>
+    <div data-in="10" data-a="stamp" class="center" style="margin:26px 0 30px"><span class="stamp" style="font-size:78px">= WAJIB LANTIK</span></div>
+    <p data-in="13" class="note" style="font-size:34px;color:#e6edf7">Contoh: pejabat, kedai, restoran, bengkel, klinik, pusat jagaan, PKS dan banyak lagi.</p>
+    <div data-in="15" class="law">Seksyen 29A, Akta 514</div>
+  </section>
+
+  <!-- ============ S4: KEPERLUAN ============ -->
+  <section class="scene" data-start="73" data-dur="28" data-chip="3 / 6">
+    <div data-in="0.2" class="kicker"><span class="n">3</span> KEPERLUAN UTAMA PELANTIKAN</div>
+    <h2 data-in="0.5">Siapa yang boleh dilantik?</h2>
+    <div data-in="2" data-a="left" class="step"><div class="num">1</div><div class="st">Seorang <span class="y">pekerja</span> majikan itu sendiri<small>Dilantik secara dalaman, bukan pihak luar</small></div></div>
+    <div data-in="5.5" data-a="left" class="step"><div class="num">2</div><div class="st">Mempunyai kelayakan atau latihan yang <span class="y">ditentukan oleh Ketua Pengarah KKP</span><small>Seksyen 29A, Akta 514</small></div></div>
+    <div data-in="10" data-a="left" class="step"><div class="num">3</div><div class="st">Lulus <span class="y">Kursus Penyelaras KKP</span> di pusat latihan yang berdaftar dengan JKKP<small>Semak senarai Pusat Pengajar Penyelaras KKP di laman rasmi JKKP</small></div></div>
+    <div data-in="15" data-a="left" class="step"><div class="num">4</div><div class="st">Dilantik secara <span class="y">bertulis</span> dan dimaklumkan kepada semua pekerja<small>Amalan baik: surat lantikan + skop tugas yang jelas</small></div></div>
+    <div data-in="19" data-a="up" class="card" style="margin-top:16px;border-color:rgba(78,168,255,.6);background:rgba(78,168,255,.08)">
+      <div class="ct" style="font-size:32px">💡 Majikan perlu memberi <span class="b">masa, sumber dan sokongan</span> supaya Penyelaras KKP dapat menjalankan tugasnya.</div></div>
+  </section>
+
+  <!-- ============ S5: PERANAN ============ -->
+  <section class="scene" data-start="101" data-dur="30" data-chip="4 / 6">
+    <div data-in="0.2" class="kicker"><span class="n">4</span> PERANAN &amp; TANGGUNGJAWAB</div>
+    <h2 data-in="0.5" style="font-size:66px;margin-bottom:30px">Penyelaras KKP <span class="y">membantu majikan</span> untuk:</h2>
+    <div class="grid2">
+      <div data-in="2" data-a="pop" class="tile"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#ffc21a" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/></svg></div><div class="tt">Pemeriksaan tempat kerja</div><div class="ts">Mengenal pasti bahaya &amp; keadaan tidak selamat</div></div>
+      <div data-in="4.5" data-a="pop" class="tile"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#ffc21a" stroke-width="2"><path d="M12 3L2 21h20z"/><path d="M12 10v5M12 18v.5"/></svg></div><div class="tt">Pentaksiran risiko</div><div class="ts">Menyokong pelaksanaan HIRARC (Seksyen 18B)</div></div>
+      <div data-in="7" data-a="pop" class="tile"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#ffc21a" stroke-width="2"><path d="M4 4h16v12H8l-4 4z"/><path d="M12 7v4M12 13.5v.5"/></svg></div><div class="tt">Laporan kemalangan</div><div class="ts">Siasatan &amp; pelaporan kemalangan, penyakit dan kejadian berbahaya</div></div>
+      <div data-in="9.5" data-a="pop" class="tile"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#ffc21a" stroke-width="2"><path d="M3 10v4l11 5V5z"/><path d="M14 8a4 4 0 010 8M18 6a7 7 0 010 12"/></svg></div><div class="tt">Promosi budaya KKP</div><div class="ts">Kesedaran, taklimat &amp; latihan pekerja</div></div>
+      <div data-in="12" data-a="pop" class="tile"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#ffc21a" stroke-width="2"><path d="M6 2h9l5 5v15H6z"/><path d="M9 12h8M9 16h8M9 8h3"/></svg></div><div class="tt">Rekod &amp; dokumentasi</div><div class="ts">Menyelenggara rekod dan dokumen KKP</div></div>
+      <div data-in="14.5" data-a="pop" class="tile"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#ffc21a" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg></div><div class="tt">Lapor &amp; cadang</div><div class="ts">Melapor kepada majikan dan melaksanakan arahan KKP lain</div></div>
+    </div>
+    <div data-in="19" data-a="up" class="card" style="margin-top:26px;border-color:rgba(255,194,26,.7);background:rgba(255,194,26,.1)">
+      <div class="ct" style="font-size:32px">⚖ Namun, <span class="y">kewajipan utama</span> memastikan keselamatan, kesihatan dan kebajikan pekerja <u>kekal pada majikan</u> (Seksyen 15).</div></div>
+  </section>
+
+  <!-- ============ S6: IMPLIKASI ============ -->
+  <section class="scene" data-start="131" data-dur="25" data-chip="5 / 6">
+    <div data-in="0.2" class="kicker" style="background:var(--red);color:#fff"><span class="n" style="color:var(--red)">5</span> IMPLIKASI PERUNDANGAN</div>
+    <h2 data-in="0.5">Gagal melantik Penyelaras KKP ialah suatu <span class="r">KESALAHAN</span></h2>
+    <div data-in="2.5" data-a="pop" class="card pen center" style="padding:40px 30px">
+      <div class="ct" style="font-size:34px;color:var(--muted);margin-bottom:12px">Jika disabitkan, majikan boleh dikenakan</div>
+      <div class="money">Denda ≤ RM<span data-count="50000" data-cin="2.6" data-fmt="1">50,000</span></div>
+      <div class="ct" style="margin:14px 0">atau</div>
+      <div class="money" style="font-size:80px">Penjara ≤ 6 bulan</div>
+      <div class="ct" style="margin-top:14px">atau <span class="r">kedua-duanya</span></div>
+      <div class="law" style="color:#ff8a95;border-color:rgba(255,77,94,.6)">Seksyen 29A, Akta 514</div>
+    </div>
+    <div data-in="10" data-a="left" class="card pen"><div class="row">
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#ff4d5e" stroke-width="2"><path d="M14 4l6 6M4 20l7-7M10 8l6 6M8 10l6-6 6 6-6 6z"/></svg></div>
+      <div class="ct" style="font-size:33px">Kegagalan kewajipan am majikan: denda ≤ <span class="r">RM500,000</span> atau penjara ≤ <span class="r">2 tahun</span> atau kedua-duanya<small>Seksyen 15 &amp; 19, Akta 514 (selepas pindaan 2022)</small></div></div></div>
+    <div data-in="15" data-a="left" class="card pen"><div class="row">
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#ff4d5e" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg></div>
+      <div class="ct" style="font-size:33px">Pengarah, pengurus atau pegawai syarikat juga boleh dipertanggungjawabkan<small>Seksyen 52, Akta 514</small></div></div></div>
+  </section>
+
+  <!-- ============ S7: MESEJ ============ -->
+  <section class="scene" data-start="156" data-dur="15" data-chip="6 / 6">
+    <div data-in="0.2" class="kicker" style="background:var(--green)"><span class="n" style="color:var(--green)">6</span> MESEJ KEPADA MAJIKAN</div>
+    <h2 data-in="0.5">Patuhi undang-undang. <span class="g">Lindungi pekerja.</span></h2>
+    <div data-in="1.8" data-a="left" class="step"><div class="num" style="background:var(--green)">1</div><div class="st">Semak bilangan pekerja &amp; status SHO tempat kerja anda</div></div>
+    <div data-in="3.3" data-a="left" class="step"><div class="num" style="background:var(--green)">2</div><div class="st">Hantar pekerja ke Kursus Penyelaras KKP berdaftar JKKP</div></div>
+    <div data-in="4.8" data-a="left" class="step"><div class="num" style="background:var(--green)">3</div><div class="st">Lantik secara bertulis &amp; sokong peranannya</div></div>
+    <div data-in="6.5" data-a="pop" class="card center" style="margin-top:24px;border-color:rgba(42,209,122,.7);background:rgba(42,209,122,.1);padding:40px">
+      <div style="font-size:52px;font-weight:900;line-height:1.15">Keselamatan pekerja <span class="y">bukan pilihan</span> —<br>ia <span class="g">kewajipan undang-undang.</span></div></div>
+  </section>
+
+  <!-- ============ S8: RUJUKAN ============ -->
+  <section class="scene" data-start="171" data-dur="6" data-chip="RUJUKAN">
+    <div data-in="0.1" class="kicker">RUJUKAN</div>
+    <ul class="src" data-in="0.3">
+      <li>Akta Keselamatan dan Kesihatan Pekerjaan 1994 (Akta 514) — Cetakan Semula 1.6.2024: Seksyen 1(2), 15, 18B, 19, 29, 29A &amp; 52</li>
+      <li>Akta Keselamatan dan Kesihatan Pekerjaan (Pindaan) 2022 [Akta A1648]</li>
+      <li>Perintah KKP (Pegawai Keselamatan dan Kesihatan) 1997</li>
+      <li>Panduan Penyelaras KKP &amp; senarai Pusat Pengajar Penyelaras KKP — JKKP (dosh.gov.my)</li>
+    </ul>
+    <p data-in="1.5" class="note" style="margin-top:40px;font-size:28px">Video ini untuk tujuan kesedaran. Untuk keperluan khusus, rujuk teks penuh akta dan Jabatan Keselamatan dan Kesihatan Pekerjaan (JKKP).</p>
+    <div data-in="2.5" data-a="pop" class="center" style="margin-top:60px"><div style="font-size:64px;font-weight:900">#<span class="y">SelamatBekerja</span> #KKP</div></div>
+  </section>
+
+  <div id="footer">
+    <div class="ref"><span>Akta Keselamatan dan Kesihatan Pekerjaan 1994</span><span id="clock"></span></div>
+    <div id="bar"><div id="barFill"></div></div>
+  </div>
+</div>
+
+<script>
+const TOTAL = 177;
+const scenes = [...document.querySelectorAll('.scene')];
+const clamp = (x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const easeOut = x=>1-Math.pow(1-x,3);
+const easeBack = x=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2);};
+function fmt(n){return n.toLocaleString('en-US');}
+
+window.renderAt = function(t){
+  // background motion
+  document.getElementById('b1').style.transform=`translate(${Math.sin(t*0.13)*120}px,${Math.cos(t*0.11)*90}px)`;
+  document.getElementById('b2').style.transform=`translate(${Math.cos(t*0.09)*130}px,${Math.sin(t*0.12)*110}px)`;
+  document.getElementById('b3').style.transform=`translate(${Math.sin(t*0.07)*160}px,${Math.cos(t*0.1)*140}px)`;
+  document.getElementById('grid').style.backgroundPosition=`${(t*12)%90}px ${(t*12)%90}px`;
+  document.querySelectorAll('.stripes').forEach(s=>s.style.backgroundPosition=`${(t*40)%96}px 0`);
+  document.getElementById('barFill').style.width=(clamp(t/TOTAL)*100)+'%';
+  const mm=Math.floor(t/60), ss=Math.floor(t%60);
+  document.getElementById('clock').textContent=`${mm}:${String(ss).padStart(2,'0')} / 2:57`;
+
+  scenes.forEach(s=>{
+    const st=+s.dataset.start, du=+s.dataset.dur, lt=t-st;
+    if(lt<0||lt>=du){s.style.display='none';return;}
+    s.style.display='flex';
+    document.getElementById('chip').textContent=s.dataset.chip;
+    const inP=easeOut(clamp(lt/0.45)), outP=easeOut(clamp((du-lt)/0.45));
+    const vis=Math.min(inP,outP);
+    s.style.opacity=vis;
+    s.style.transform=`translateY(${(1-inP)*40 - (1-outP)*40}px)`;
+    s.querySelectorAll('[data-in]').forEach(el=>{
+      const d=+el.dataset.in, a=el.dataset.a||'up';
+      const raw=clamp((lt-d)/0.7);
+      const p=easeOut(raw);
+      el.style.opacity=clamp(raw*1.6);
+      if(a==='up') el.style.transform=`translateY(${(1-p)*50}px)`;
+      else if(a==='left') el.style.transform=`translateX(${(1-p)*-90}px)`;
+      else if(a==='pop') el.style.transform=`scale(${0.6+0.4*easeBack(raw)})`;
+      else if(a==='stamp'){const q=clamp((lt-d)/0.35); el.style.opacity=q; el.style.transform=`scale(${2.2-1.2*easeOut(q)}) rotate(${-6*easeOut(q)}deg)`;}
+    });
+    s.querySelectorAll('[data-count]').forEach(el=>{
+      const tgt=+el.dataset.count, d=+el.dataset.cin;
+      const p=easeOut(clamp((lt-d)/1.4));
+      const v=Math.round(tgt*p);
+      el.textContent=el.dataset.fmt?fmt(v):String(Math.max(v,0));
+    });
+  });
+};
+window.renderAt(0);
+</script>
+</body>
+</html>
